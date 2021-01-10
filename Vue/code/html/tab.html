@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>tab标签切换</title>
+    <script src="../js/vue.js"></script>
+    <style>
+      .tab .title {
+        border-bottom: 2px solid #ccc;
+        overflow: hidden;
+      }
+      .tab .title span {
+        float: left; 
+        padding: 0 15px;
+        height: 50px;
+        line-height: 50px;
+        border: 1px solid #efefef;
+        border-bottom: none;
+      }
+      .tab .title span.active {
+        border: 1px solid #ccc;
+        background-color: #ffc;
+        cursor: pointer;
+      }
+      .tab .content {
+        border: 1px solid #ddd;
+        padding: 15px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>tab标签切换</h1>
+    <div id="app">
+      <div class="tab">
+        <div class="title">
+          <span
+            v-for="(item,index) in tasklist"
+            v-bind:class="{active:index===currentIndex}"
+            v-on:click="checkTab(index)"
+          >
+            {{item.name}}
+          </span>
+        </div>
+        <div class="content">
+          <div v-for="(item,index) in tasklist" v-show="index===currentIndex">
+            {{ item.hobby }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let vm = new Vue({
+        el: "#app",
+        data: {
+          tasklist: [
+            {
+              name: "全职高手",
+              hobby: "君莫笑",
+            },
+            {
+              name: "奈文摩尔",
+              hobby: "SF",
+            },
+            {
+              name: "laoxie",
+              hobby: "大保健之神",
+            },
+          ],
+          currentIndex: 0,
+        },
+
+        // 方法
+        methods: {
+          checkTab: function (index) {
+            console.log(index);
+            this.currentIndex = index;
+          },
+        },
+      });
+    </script>
+  </body>
+</html>

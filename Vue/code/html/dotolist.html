@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>05todolist</title>
+    <link rel="stylesheet" href="../css/bootstrap.css" />
+    <script src="../js/vue.js"></script>
+  </head>
+
+  <body>
+    <div class="container p-3">
+      <h1 class="text-center">todolist待办事项列表</h1>
+      <div id="app">
+        <div class="input-group mt-3">
+          <input
+            type="text"
+            class="form-control"
+            ref="input"
+            v-model="title"
+            @keyup.enter="addItem"
+          />
+          <div class="input-group-append">
+            <button class="btn btn-success" v-on:click="addItem">添加</button>
+          </div>
+        </div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">代办事项</th>
+              <th scope="col">是否完成</th>
+              <th scope="col">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- 遍历  完成给class table-success-->
+            <tr
+              v-for="(item,index) in datalist"
+              :key="item.id"
+              :class="{'table-success':item.accomplish}"
+            >
+              <th scope="row">{{item.id}}</th>
+              <td>{{ item.title }}</td>
+              <td>{{item.accomplish ? "是" : "否"}}</td>
+              <td>
+                <!-- 完成 传id-->
+                <button
+                  class="btn btn-outline-primary btn-sm"
+                  @click="complete(item.id)"
+                >
+                  完成
+                </button>
+                <!-- 删除 传id-->
+                <button
+                  class="btn btn-outline-danger btn-sm"
+                  @click="removeItem(index)"
+                >
+                  删除
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="border border-secondary p-3">
+          待办事项：{{datalist.length}}，完成：{{completed.length}}，未完成：{{unfinished.length}}
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let key = "todoMvclist";
+      let storage = {
+        set(val) {
+          //存数据
+          localStorage.setItem(key, JSON.stringify(val));
+        },
+        get() {
+          return JSON.parse(localStorage.getItem(key)) || [];
+        },
+      };
+      // let datalist = [
+      //   {
+      //     id: 1,
+      //     title: "全职高手",
+      //     accomplish: false,
+      //   },
+      //   {
+      //     id: 2,
+      //     title: "完美世界",
+      //     accomplish: true,
+      //   },
+      //   {
+      //     id: 3,
+      //     title: "君莫笑",
+      //     accomplish: false,
+      //   },
+      //   {
+      //     id: 4,
+      //     title: "DOTA2",
+      //     accomplish: false,
+      //   },
+      // ];
+
+      const vm = new Vue({
+        el: "#app",
+        data: {
+          datalist: storage.get(),
+          title: "",
+          maxID: 1,
+        },
+
+        //方法
+        methods: {
+          // 功能：新添数据 trim() 去除前后空格
+          addItem() {
+            if (this.title.trim()) {
+              let obj = {
+                id: this.maxID++,
+                title: this.title,
+                accomplish: false,
+              };
+              this.datalist.push(obj);
+              // 清空并自动获得焦点
+              this.title = "";
+              this.$refs.input.focus();
+            }
+          },
+
+          // 功能：删除一条数据
+          removeItem(index) {
+            // console.log("删除=", id);
+            let issure = confirm("您确定要删除我吗?");
+            if (issure) {
+              this.datalist.splice(index, 1);
+            }
+            // this.datalist = this.datalist.filter((item) => item.id != id);
+          },
+
+          //功能：是否完成
+          complete(id) {
+            console.log("是否完成", id);
+            this.datalist.forEach((item) => {
+              if (item.id == id) {
+                item.accomplish = true;
+              }
+            });
+          },
+        },
+
+        // 计算属性：一般用于对data数据进行过滤，映射，计算等操作
+        // 计算属性为存储器属性，默认为getter
+        // 计算属性具有缓存功能
+        computed: {
+          // 计算属性：已完成
+          completed() {
+            return this.datalist.filter((item) => item.accomplish == true);
+          },
+          // 计算属性：未完成
+          unfinished() {
+            return this.datalist.filter((item) => item.accomplish == false);
+          },
+        },
+
+        //监听
+        watch: {
+          //浅度监听：只能监听结构简单，数据简单的熟悉
+          // status(newval) {
+          //   console.log(newval, "变了");
+          // },
+          //深度监听
+          datalist: {
+            deep: true,
+            handler(newvla){
+              storage.set(newvla);
+            }
+          },
+        },
+      });
+    </script>
+  </body>
+</html>
